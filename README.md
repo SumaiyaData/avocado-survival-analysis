@@ -124,7 +124,7 @@ Because each avocado was photographed from two opposite sides, ripening stages m
 
 **Maximum ripening stage per fruit-day**
 
-The maximum observed stage was selected as the primary representation because it captures the earliest detection of advanced ripening progression.
+The maximum observed stage was selected as the primary representation because it captures the most advanced ripening state observed for each fruit-day.
 
 ### Sensitivity analyses
 
@@ -172,10 +172,6 @@ Implemented methods:
 Kaplan-Meier estimation was used to describe the probability that fruits remained below the shelf-life endpoint over time, while log-rank testing evaluated differences between storage trajectories.
 
 ---
-
-## Parametric Survival Modelling
-
-The following parametric models were implemented:
 
 ### Weibull Accelerated Failure Time (AFT) Model
 
@@ -327,7 +323,7 @@ These results indicate that fruit stored at 10 °C remained below the Stage 4 sh
 <img width="2539" height="1638" alt="kaplan_meier_curve" src="https://github.com/user-attachments/assets/24e0627c-f8af-464a-b14e-c4041ac43483" />
 
 
-**Caption:**  
+ 
 **Kaplan-Meier survival curves showing delayed progression toward Stage 4 under 10 °C storage compared with 20 °C and ambient conditions.**
 
 ---
@@ -381,16 +377,7 @@ Overall, RMST results were consistent with both the Kaplan-Meier and AFT analyse
 
 <img width="2100" height="1407" alt="shelf_life_distribution" src="https://github.com/user-attachments/assets/01be1b6c-bd1e-4602-81b7-65ae8b9b18f0" />
 
-
-**Important note:**  
-Use this figure only if it is presented carefully. If it is a box plot of observed days, it should either:
-- include only fruits that reached Stage 4, or
-- clearly distinguish censored observations.
-
-A better caption would be:
-
-**Observed time-to-event patterns across storage conditions, shown for descriptive comparison only. Censored observations should be identified separately where applicable.**
-
+*Observed time-to-event patterns across storage conditions. Survival modelling was used as the primary analysis framework because it accounts for censored observations.*
 ---
 
 # Sensitivity Results
@@ -432,7 +419,7 @@ This supports the robustness of the primary Stage 4 findings.
 <img width="2539" height="1638" alt="KM_stage5_sensitivity" src="https://github.com/user-attachments/assets/57b42ef6-407f-41fc-b601-6d785f41daea" />
 
 
-**Caption:**  
+ 
 **Kaplan-Meier sensitivity analysis using Stage 5 as an alternative shelf-life endpoint. The overall ranking of storage conditions remained consistent with the primary Stage 4 analysis.**
 
 ---
@@ -507,7 +494,7 @@ The notebook contains the complete workflow, including:
 - sensitivity analyses.
 Data Availability
 The original dataset is not redistributed in this repository.
-The Hass Avocado Ripening Photographic Dataset can be downloaded from the official source
+The Hass Avocado Ripening Photographic Dataset can be downloaded from the official source: https://data.mendeley.com/datasets/3xd9n945v8/1
 
 Limitations:
 This repository represents a secondary analysis of an existing public dataset.
@@ -520,16 +507,37 @@ Important limitations include:
 Relationship to the Original Dataset Study:
 The original Hass Avocado Ripening Photographic Dataset was developed primarily for image-based ripeness assessment and classification. This repository extends the analytical use of the dataset by treating ripening progression as a time-to-event survival problem. The objective is not to replace image classification approaches, but to provide an additional statistical framework for modelling shelf-life dynamics from longitudinal agricultural imaging data.
 
-Citation: If you use this workflow, please cite:
-Repository: Avocado Survival Analysis Framework
+# Citation
 
-GitHub Repository: https://github.com/SumaiyaData/avocado-survival-analysis
+If you use this workflow, please cite the repository, dataset, and original publication.
 
-Dataset: Hass Avocado Ripening Photographic Dataset
+## Repository
 
-Mendeley Data: https://data.mendeley.com/datasets/3xd9n945v8/1
+**Avocado Survival Analysis Framework**
 
-Original Dataset Publication: Xavier, Pedro; Rodrigues, Pedro; L. M. Silva, Cristina (2024), “'Hass' Avocado Ripening Photographic Dataset”, Mendeley Data, V1, doi: 10.17632/3xd9n945v8.1
+GitHub Repository:
+
+https://github.com/SumaiyaData/avocado-survival-analysis
+
+
+## Dataset
+
+Xavier, Pedro; Rodrigues, Pedro; L. M. Silva, Cristina (2024).
+
+**"Hass Avocado Ripening Photographic Dataset."**
+
+Mendeley Data, V1.
+
+https://doi.org/10.17632/3xd9n945v8.1
+
+
+## Related Publication
+
+Xavier P., Rodrigues P.M., Silva C.L.M. (2024).
+
+**"Shelf-Life Management and Ripening Assessment of Hass Avocado Using Deep Learning Approaches."**
+
+Foods, 13(8), 1150.
 
 
 ---
