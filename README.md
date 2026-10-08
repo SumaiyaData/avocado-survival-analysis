@@ -137,7 +137,7 @@ The maximum ripening stage was retained programmatically when constructing the f
 
 ### Primary Endpoint: Stage 4
 
-Stage 4 was used as the primary operational shelf-life endpoint.
+Stage 4 was selected as the primary shelf-life endpoint because the original dataset defines Stage 4 as the end of shelf life. Stage 5 represents the overripe stage and was therefore analysed separately as a secondary endpoint.
 
 The survival outcome was defined as:
 
