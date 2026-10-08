@@ -4,63 +4,62 @@
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![Reproducibility](https://img.shields.io/badge/Reproducibility-Enabled-orange)
 ![Dataset](https://img.shields.io/badge/Dataset-Mendeley%20Data-lightgrey)
+
 ---
 
 ## Overview
 
-This repository provides the computational workflow accompanying a study on survival-based shelf-life modelling of Hass avocado ripening dynamics.
+This repository provides the computational workflow accompanying a secondary analysis of the **Hass Avocado Ripening Photographic Dataset** using survival-analysis methods.
 
-The Hass Avocado Ripening Photographic Dataset was originally developed for image-based ripeness assessment, where individual observations were assigned to predefined ripening stages. In this work, the longitudinal structure of the dataset is reinterpreted as a time-to-event modelling problem.
+The original dataset was developed for image-based ripeness assessment, with repeated photographs of individual Hass avocados classified into predefined ripening stages. In this work, the longitudinal structure of those observations is reformulated as a time-to-event problem.
 
 Rather than asking:
 
 > "What ripening stage is the fruit currently in?"
 
-This study investigates:
+this study addresses the complementary question:
 
-> "How long does an individual fruit remain before reaching the defined shelf-life endpoint?"
+> "How long do fruits remain before reaching a defined shelf-life endpoint?"
 
-The workflow converts repeated fruit-level ripening observations into longitudinal trajectories and applies survival-analysis methods to estimate shelf-life progression under different storage conditions.
+The workflow reconstructs fruit-level longitudinal ripening trajectories and applies Kaplan-Meier estimation, log-rank testing, accelerated failure time modelling, interval-censored survival analysis, restricted mean survival time estimation, and sensitivity analyses.
 
-The analysis includes non-parametric survival estimation, accelerated failure time modelling, interval-censored survival analysis, restricted mean survival time estimation, and sensitivity analyses to evaluate the robustness of estimated shelf-life trajectories.
+The primary inferential model is an **interval-censored Weibull accelerated failure time (AFT) model**, which accounts for uncertainty in the exact transition time between daily observations.
 
-This repository is intended to support transparent and reproducible analysis of longitudinal agricultural imaging datasets for time-to-event shelf-life modelling.
+This repository is intended to support transparent and reproducible analysis of longitudinal agricultural imaging datasets using time-to-event methods.
 
 ---
 
 ## Research Question
 
-Can longitudinal fruit-image observations be transformed into a reproducible shelf-life model using survival analysis?
+Can longitudinal fruit-image observations be transformed into a reproducible time-to-event framework for modelling Hass avocado shelf-life progression?
 
 ---
 
 ## Key Idea
 
-Most ripening studies using image-based datasets focus on identifying the current maturity state of a fruit:
+Most image-based ripening studies focus on identifying the current maturity state of a fruit:
 
 > "What ripening stage is the fruit currently in?"
 
-This repository explores a complementary question:
+This repository explores a complementary longitudinal question:
 
-> "How long will an individual fruit remain before reaching the defined shelf-life endpoint?"
+> "How long does a fruit remain before reaching the defined shelf-life endpoint?"
 
-To address this, longitudinal ripening observations are transformed from image-level classifications into a fruit-level time-to-event framework:
+The analytical transformation is:
 
+```text
 Image-level ripening observations
         ↓
-
 Fruit-level longitudinal trajectories
         ↓
-
 Time-to-event survival dataset
         ↓
-
 Survival modelling and uncertainty estimation
         ↓
+Shelf-life progression estimates
+```
 
-Shelf-life estimation
-
-This transformation enables existing longitudinal agricultural imaging datasets to be analysed not only for ripeness classification, but also for shelf-life dynamics and time-dependent quality progression.
+This framework demonstrates how an existing longitudinal agricultural imaging dataset can be used not only for ripeness classification, but also for statistical modelling of ripening time and shelf-life dynamics.
 
 <img width="1122" height="1402" alt="Avocado Survival Analysis Workflow" src="https://github.com/user-attachments/assets/21568841-8876-40c8-acdc-5de7cb25ba70" />
 
@@ -70,369 +69,419 @@ This transformation enables existing longitudinal agricultural imaging datasets 
 
 ## Hass Avocado Ripening Photographic Dataset
 
-This study uses the publicly available **Hass Avocado Ripening Photographic Dataset** from Mendeley Data:
+This study uses the publicly available **Hass Avocado Ripening Photographic Dataset** from Mendeley Data.
 
 Dataset source:
 
 https://data.mendeley.com/datasets/3xd9n945v8/1
 
+The dataset contains repeated longitudinal observations of individual Hass avocados during postharvest ripening.
 
-The dataset contains longitudinal observations of individual Hass avocados during postharvest ripening progression.
-
-### Dataset characteristics
+### Dataset Characteristics
 
 - **478 Hass avocado fruits**
-- **14,710 photographic observations**
+- **14,722 image-level records in the distributed spreadsheet**
+- **7,361 fruit-day observations**
+- **Two photographs per fruit-day**
+- **No exact duplicate rows**
 - **Three storage conditions**
   - T10: 10 °C
   - T20: 20 °C
   - Ambient temperature
 - **Daily longitudinal observations during ripening**
-- **Two photographed sides per fruit**
 - **Five predefined ripening stages**
 
+The Mendeley Data metadata reports **14,710 photographs**, whereas the distributed spreadsheet analysed in this repository contains **14,722 image-level records**.
+
+The distributed spreadsheet was internally consistent: it contained **7,361 fruit-days with exactly two photographs per fruit-day**, and no exact duplicate rows were detected. Therefore, all 14,722 spreadsheet records were retained for analysis.
+
+---
 
 ## Original Dataset Purpose
 
-The dataset was originally developed for image-based avocado ripeness assessment, where individual observations were assigned to predefined ripening stages for classification and deep learning applications.
+The original dataset was developed primarily for image-based avocado ripeness assessment, with individual photographs assigned to predefined ripening stages for classification and deep-learning applications.
 
 ## Use in This Repository
 
-Rather than treating ripening stages only as categorical image labels, this repository exploits the longitudinal structure of the dataset to reconstruct fruit-level ripening trajectories.
+Rather than treating ripening stages only as categorical image labels, this repository uses the longitudinal structure of the dataset to reconstruct fruit-level ripening trajectories.
 
-The repeated observations are transformed into a time-to-event framework, where the transition to the shelf-life endpoint is modelled using survival-analysis methods.
+Repeated observations are transformed into a time-to-event framework in which progression to a predefined shelf-life endpoint is analysed using survival methods.
 
-This represents a secondary analysis of the publicly available dataset and demonstrates how longitudinal agricultural imaging datasets can support shelf-life modelling beyond conventional ripeness classification.
+This is a **secondary analysis of an existing public dataset**. No new avocado storage experiment was conducted as part of this work.
 
 ---
+
 # Methodology
 
 ## 1. Fruit-Level Longitudinal Reconstruction
 
-The original dataset contains repeated image-based ripening observations collected throughout the postharvest ripening process. To enable time-to-event analysis, image-level observations were transformed into fruit-level longitudinal trajectories.
+Image-level observations were transformed into daily fruit-level longitudinal trajectories.
 
-Each observation was uniquely identified using:
+Each fruit-day was uniquely identified using:
 
-Storage condition + Fruit ID + Observation day
+`Storage condition + Fruit ID + Observation day`
 
+Each avocado was photographed from two opposite sides.
 
-This transformation converted repeated photographic observations into daily ripening trajectories for individual fruits.
+Agreement between the two side-specific ripening classifications was checked before constructing the fruit-day dataset.
 
-Because each avocado was photographed from two opposite sides, ripening stages may differ slightly between observations due to surface-level variation. Therefore, three aggregation strategies were evaluated:
+Across all **7,361 fruit-days, no disagreement was observed between the two side ratings**.
 
-### Primary analysis
+Therefore, the choice of side-aggregation rule had no effect on the derived daily ripening state.
 
-**Maximum ripening stage per fruit-day**
-
-The maximum observed stage was selected as the primary representation because it captures the most advanced ripening state observed for each fruit-day.
-
-### Sensitivity analyses
-
-Alternative aggregation strategies were evaluated:
-
-- Mean ripening stage per fruit-day
-- Minimum ripening stage per fruit-day
-
-The purpose of these analyses was to determine whether shelf-life estimates were dependent on the method used to combine observations from the two fruit sides.
+The maximum ripening stage was retained programmatically when constructing the fruit-day dataset, but minimum, maximum, and mean ratings would be identical because the two side ratings agreed for every fruit-day.
 
 ---
 
-# 2. Shelf-Life Endpoint Definition
+## 2. Shelf-Life Endpoint Definition
 
-## Primary Endpoint
+### Primary Endpoint: Stage 4
 
-### Stage 4 Ripening Index
+Stage 4 was used as the primary operational shelf-life endpoint.
 
-Stage 4 was selected as the primary shelf-life endpoint because it represents the transition beyond the optimal ripeness stage defined by the dataset.
+The survival outcome was defined as:
 
-The survival outcome was formulated as a time-to-event problem:
-Time:
-Days after storage initiation
-Event:
-Fruit reaches Stage 4
+**Time:** Days after storage initiation  
+**Event:** First observation at Stage 4 or higher
 
-Fruit observations that did not reach Stage 4 during the monitoring period were treated as right-censored observations.
+For fruits that reached the endpoint, the first day with a ripening classification of Stage 4 or higher was recorded as the observed event day.
 
-This formulation allows incomplete ripening trajectories to be incorporated without assuming that the final ripening time was observed.
+Fruits for which Stage 4 was not observed before their final available record were treated as right-censored at their last observed day.
+
+### Stage 4 Analysis Population
+
+| Storage Condition | Fruits | Stage-4 Events | Right-Censored |
+|---|---:|---:|---:|
+| T10 | 192 | 166 | 26 |
+| T20 | 143 | 130 | 13 |
+| Ambient | 143 | 130 | 13 |
+| **Total** | **478** | **426** | **52** |
+
+This formulation allows incomplete ripening trajectories to contribute information without assuming that the unobserved Stage-4 transition time is known.
 
 ---
 
 # Statistical Framework
 
-## Survival Estimation
+## Kaplan-Meier Survival Estimation
 
-Non-parametric survival methods were used to characterize ripening progression under different storage conditions.
+Kaplan-Meier estimation was used to describe the probability that fruits remained below the Stage-4 endpoint over time.
 
-Implemented methods:
+Group differences were evaluated using:
 
-- Kaplan-Meier survival estimation
-- Global log-rank test
-- Pairwise storage-condition comparisons
+- Global log-rank testing
+- Pairwise T20 versus ambient log-rank testing
 
-Kaplan-Meier estimation was used to describe the probability that fruits remained below the shelf-life endpoint over time, while log-rank testing evaluated differences between storage trajectories.
+The Kaplan-Meier analysis provides a non-parametric description of ripening progression while properly accounting for right-censored observations.
 
 ---
 
-### Weibull Accelerated Failure Time (AFT) Model
+## Primary Interval-Censored Weibull AFT Model
 
-The Weibull AFT model was used as the primary effect interpretation model because it provides directly interpretable time ratios describing acceleration or delay in shelf-life progression between storage conditions.
-
-### Interval-Censored Weibull Model
-
-Because ripening stage was observed only at discrete daily intervals, the exact transition time to Stage 4 was unknown.
+Because ripening stage was assessed only once per observation day, the exact time at which a fruit transitioned to Stage 4 was not directly observed.
 
 For example:
 
-
+```text
 Day 12 → Stage 3
 Day 13 → Stage 4
+```
 
-The true transition occurred within:
+The actual transition occurred within:
 
-
+```text
 12 < T ≤ 13
+```
 
-Interval-censored modelling was therefore performed as a sensitivity analysis to evaluate whether uncertainty in event timing influenced conclusions.
+Therefore, an **interval-censored Weibull accelerated failure time model** was used as the primary effect-estimation model.
 
----
+For fruits that reached Stage 4, the event interval was defined by the last observation before the endpoint and the first observation at Stage 4 or higher.
 
-## Restricted Mean Survival Time (RMST)
+Fruits that never reached Stage 4 were represented as right-censored at their final observed day.
 
-Restricted Mean Survival Time was calculated to provide an absolute measure of expected shelf-life within the observed follow-up period.
+T10 was used as the reference storage group.
 
-RMST estimation was complemented with bootstrap confidence intervals to quantify uncertainty around estimated survival times.
-
----
-
-## Sensitivity and Robustness Analysis
-
-The workflow included multiple robustness evaluations:
-
-- Fruit-side aggregation sensitivity
-  - Maximum stage
-  - Mean stage
-  - Minimum stage
-
-- Censoring inspection
-  - Identification of censored fruits
-  - Last observed ripening stage
-  - Last observed day
-
-- Short follow-up censoring sensitivity
-  - Exclusion of day-1-only censored observations
-
-- Alternative endpoint analysis
-  - Stage 5 sensitivity analysis
-
-- Conceptual causal structure evaluation
-  - Storage condition
-  - Storage chamber
-  - Ripening progression
-  - Shelf-life endpoint
-
----
-## Parametric Survival Modelling
-
-The following parametric survival models were implemented:
-
-### Weibull Accelerated Failure Time (AFT) Model
-
-The Weibull AFT model was used as the main effect-interpretation model because it provides directly interpretable **time ratios**, allowing shelf-life progression under different storage conditions to be compared on an absolute time scale.
-
-### Interval-Censored Weibull Model
-
-Because ripening stages were observed only at discrete daily time points, the exact transition time to Stage 4 was not directly observed.
-
-For example:
-
-Day 12 → Stage 3  
-Day 13 → Stage 4  
-
-Therefore, the true transition time lies within:
-
-`12 < T ≤ 13`
-
-To account for this timing uncertainty, an interval-censored Weibull survival model was used as an important sensitivity analysis and is treated as the more conservative time-ratio estimate.
+The model was fitted using the `survival` package in R through `rpy2`.
 
 ---
 
-## Absolute Shelf-Life Comparison
+## Standard Weibull AFT Model
 
-Restricted Mean Survival Time (RMST) was calculated to provide an absolute estimate of expected shelf-life within the observed follow-up period.
+A conventional right-censored Weibull AFT model was fitted as a supporting analysis.
 
-The RMST analysis included:
+This model provides directly interpretable time ratios and was used to assess consistency with the primary interval-censored analysis.
 
-- RMST estimation
-- Bootstrap confidence intervals
-- Pairwise RMST difference estimation
+---
+
+## Distributional Sensitivity
+
+The conventional right-censored AFT analysis was repeated using Weibull, log-normal, and log-logistic distributions.
+
+| Model | AIC | T20 vs T10 TR | Ambient vs T10 TR |
+|---|---:|---:|---:|
+| Weibull | 1559.51 | 0.430 | 0.421 |
+| Log-logistic | 1656.67 | 0.413 | 0.411 |
+| Log-normal | 1692.90 | 0.420 | 0.415 |
+
+The Weibull model had the lowest AIC.
+
+The estimated time ratios were nevertheless similar across the three parametric distributions, indicating that the main storage-group pattern was not highly sensitive to the selected right-censored AFT distribution.
+
+---
+
+## Restricted Mean Survival Time
+
+Restricted Mean Survival Time (RMST) was calculated as an absolute summary of time remaining below the Stage-4 endpoint.
+
+The analysis used a restriction horizon of **20 days**.
+
+Bootstrap resampling with **1,000 replicates** was used to estimate confidence intervals for:
+
+- Group-specific RMST
+- Pairwise RMST differences
+
+---
+
+## Cox Proportional Hazards Model
+
+A Cox proportional hazards model was also fitted as a supplementary analysis.
+
+Because storage groups showed very strong separation in Stage-4 timing and the resulting hazard-ratio estimates were extremely large, Cox hazard ratios are not emphasized as headline results.
+
+The AFT framework was preferred for primary effect interpretation.
 
 ---
 
 # Robustness and Sensitivity Analysis
 
-The workflow includes the following robustness checks:
+The workflow includes the following robustness checks.
 
-✅ **Duplicate observation verification**  
-- Confirmation of fruit-day consistency  
-- Verification that each fruit-day contains the expected paired observations  
+### Duplicate and Fruit-Day Consistency Verification
 
-✅ **Fruit-side aggregation sensitivity**  
-- Maximum stage per fruit-day  
-- Mean stage per fruit-day  
-- Minimum stage per fruit-day  
+- No exact duplicate rows were detected.
+- All **7,361 fruit-days** contained exactly two photographic observations.
 
-✅ **Censoring inspection**  
-- Identification of censored fruits  
-- Extraction of last observed day  
-- Extraction of last observed ripening stage  
+### Fruit-Side Agreement Check
 
-✅ **Short follow-up censoring sensitivity**  
-- Day-1-only censored observations were removed  
-- Survival estimates were re-evaluated to assess the effect of potentially uninformative short follow-up  
+- The two photographed sides had identical ripening-stage classifications for all **7,361 fruit-days**.
+- Therefore, side aggregation did not influence the derived survival outcome.
 
-✅ **Alternative endpoint sensitivity analysis**  
-- Stage 5 used as an alternative shelf-life endpoint  
+### Censoring Inspection
 
-✅ **Interval-censored survival modelling**  
-- Daily observation uncertainty explicitly incorporated into time-to-event modelling  
+- **52 fruits** were right-censored in the primary Stage-4 analysis.
+- The final observed day and ripening stage were inspected for each censored fruit.
 
-✅ **Conceptual DAG evaluation**  
-- Storage regime  
-- Chamber context  
-- Ripening progression  
-- Shelf-life endpoint  
+### Short Follow-Up Censoring Sensitivity
+
+- **15 fruits** were censored after only Day 1.
+- These observations were temporarily excluded in a sensitivity analysis.
+- The overall storage-group median pattern remained unchanged.
+
+### Extreme Censoring Sensitivity Scenarios
+
+Two deliberately extreme scenarios were examined:
+
+- Latest-follow-up scenario
+- Earliest-event scenario
+
+The resulting Weibull AFT time ratios remained broadly consistent with the main analysis.
+
+### Alternative Endpoint Analysis
+
+Stage 5 was analysed as a secondary endpoint to determine whether the overall storage-group pattern depended on the selected ripening endpoint.
+
+### Conceptual DAG
+
+A conceptual directed acyclic graph was used to illustrate possible relationships among:
+
+- Baseline fruit characteristics
+- Storage chamber context
+- Storage condition
+- Ripening progression
+- Shelf-life endpoint
+
+The DAG is conceptual and is not used to claim causal identification.
 
 ---
 
 # Main Results
 
-## Median Time to Stage 4
+## Kaplan-Meier Median Time to Stage 4
 
-Kaplan-Meier median shelf-life estimates showed clear separation between storage conditions:
+Kaplan-Meier estimates showed substantial separation between T10 and the warmer storage conditions.
 
-| Storage Condition | Median Shelf-Life |
-|------------------|------------------|
-| T10 (10 °C) | 17 days |
-| T20 (20 °C) | 7 days |
-| Ambient | 7 days |
+| Storage Condition | KM Median Time to Stage 4 | 95% CI |
+|---|---:|---:|
+| T10 (10 °C) | 17 days | 17–17 |
+| T20 (20 °C) | 7 days | 7–7 |
+| Ambient | 7 days | 7–7 |
 
-These results indicate that fruit stored at 10 °C remained below the Stage 4 shelf-life endpoint substantially longer than fruit stored at 20 °C or under ambient conditions.
+The global log-rank test showed strong evidence that the survival trajectories differed among storage groups:
+
+**χ² = 407.58, df = 2, p = 3.12 × 10⁻⁸⁹.**
+
+The integer-valued median confidence limits reflect the discrete daily observation schedule and concentration of Stage-4 events at particular observation days.
+
+T10 fruits remained below Stage 4 substantially longer than fruits in either warmer-storage group.
 
 ---
 
 <img width="2539" height="1638" alt="kaplan_meier_curve" src="https://github.com/user-attachments/assets/24e0627c-f8af-464a-b14e-c4041ac43483" />
 
-
- 
-**Kaplan-Meier survival curves showing delayed progression toward Stage 4 under 10 °C storage compared with 20 °C and ambient conditions.**
+**Kaplan-Meier survival curves showing delayed progression toward Stage 4 under T10 storage compared with T20 and ambient storage.**
 
 ---
 
-# Weibull Accelerated Failure Time Results
+# Primary Interval-Censored Weibull AFT Results
 
-## Primary interpretation from interval-censored modelling
+The primary interval-censored Weibull AFT model showed substantially shorter time to Stage 4 under T20 and ambient storage relative to T10.
 
-Relative to T10 storage, the interval-censored Weibull model indicated substantially shorter time to Stage 4 under warmer conditions.
+| Comparison | Time Ratio | 95% CI |
+|---|---:|---:|
+| T20 vs T10 | 0.411 | 0.398–0.425 |
+| Ambient vs T10 | 0.403 | 0.390–0.416 |
 
-| Storage Condition | Time Ratio (approx.) |
-|------------------|----------------------|
-| T20 | 0.41 |
-| Ambient | 0.40 |
+Relative to T10, the estimated time to Stage 4 was approximately **41% as long under T20** and **40% as long under ambient storage**.
 
-Interpretation:
+The supporting conventional Weibull AFT model produced similar estimates:
 
-Fruits stored at 20 °C and under ambient conditions reached the Stage 4 shelf-life endpoint in roughly **40% of the time** required under 10 °C storage.
+- **T20 vs T10: TR = 0.430**
+- **Ambient vs T10: TR = 0.421**
 
-This result was consistent with the standard Weibull AFT model and supports the conclusion that warmer storage regimes were associated with faster ripening progression.
+The consistency between the standard and interval-censored analyses supports the robustness of the estimated storage-group associations.
 
-> Note: The interval-censored model is emphasized here because the exact event time was not directly observed between daily assessments.
-
----
-
-## T20 vs Ambient Comparison
-
-Pairwise comparison between T20 and ambient storage showed no clear evidence of a difference in Stage 4 progression timing.
-
-- **Log-rank test (T20 vs Ambient): p = 0.31**
-
-This suggests that, within this dataset, 20 °C and ambient storage produced similar ripening trajectories for the Stage 4 endpoint.
+These estimates describe **associations between storage condition and observed ripening timing** and should not be interpreted as definitive causal treatment effects.
 
 ---
 
-# Restricted Mean Survival Time
+## T20 vs Ambient Comparison for Stage 4
 
-RMST estimates also supported longer shelf-life under 10 °C storage.
+The pairwise Stage-4 log-rank comparison between T20 and ambient storage showed no detectable difference:
 
-| Storage Condition | RMST (days) |
-|------------------|-------------|
-| T10 | 16.17 |
-| T20 | 6.80 |
-| Ambient | 6.71 |
+**χ² = 1.02, p = 0.314.**
 
-Bootstrap confidence intervals were calculated to quantify uncertainty around these RMST estimates and around pairwise RMST differences.
+Thus, for the **primary Stage-4 endpoint**, T20 and ambient storage showed similar survival trajectories.
 
-Overall, RMST results were consistent with both the Kaplan-Meier and AFT analyses, showing that 10 °C storage preserved shelf-life markedly longer than the warmer storage conditions.
+This result should not be interpreted as proof that the two storage conditions are statistically equivalent.
+
+---
+
+# Restricted Mean Survival Time Results
+
+RMST was calculated using a restriction horizon of **20 days**.
+
+| Storage Condition | RMST (days) | Bootstrap 95% CI |
+|---|---:|---:|
+| T10 | 16.17 | 15.82–16.54 |
+| T20 | 6.80 | 6.59–6.99 |
+| Ambient | 6.71 | 6.52–6.90 |
+
+Pairwise RMST differences were:
+
+| Comparison | RMST Difference (days) | 95% CI |
+|---|---:|---:|
+| T10 − T20 | 9.37 | 8.93–9.78 |
+| T10 − Ambient | 9.45 | 9.03–9.85 |
+| T20 − Ambient | 0.08 | −0.19–0.36 |
+
+RMST results were consistent with the Kaplan-Meier and AFT analyses.
+
+T10 had substantially greater restricted mean time remaining below Stage 4 than either warmer-storage group.
+
+The Stage-4 RMST difference between T20 and ambient was small and its confidence interval included zero.
 
 ---
 
 <img width="2100" height="1407" alt="shelf_life_distribution" src="https://github.com/user-attachments/assets/01be1b6c-bd1e-4602-81b7-65ae8b9b18f0" />
 
-*Observed time-to-event patterns across storage conditions. Survival modelling was used as the primary analysis framework because it accounts for censored observations.*
+*Distribution of observed event or censoring times by storage condition. Because censored observations do not represent known Stage-4 event times, this figure is descriptive only; survival-model estimates are the primary basis for inference.*
+
 ---
 
 # Sensitivity Results
 
-## Side Aggregation Sensitivity
+## Fruit-Side Agreement
 
-All three fruit-side aggregation approaches produced identical median shelf-life estimates:
+The two photographed sides had identical ripening-stage classifications for all **7,361 fruit-days**.
 
-| Aggregation Strategy | T10 | T20 | Ambient |
-|----------------------|-----|-----|---------|
-| Maximum | 17 | 7 | 7 |
-| Mean | 17 | 7 | 7 |
-| Minimum | 17 | 7 | 7 |
+- Fruit-days with different side ratings: **0**
+- Total fruit-days: **7,361**
 
-This indicates that the overall shelf-life conclusions were robust to the method used to combine the two photographed fruit sides.
+Therefore, the choice of side-aggregation rule had no effect on the derived survival outcomes.
 
 ---
 
 ## Short Follow-Up Censoring Sensitivity
 
-Because some censored fruits had extremely short follow-up, an additional sensitivity analysis excluded day-1-only censored observations.
+Among the 52 right-censored fruits, **15 were censored after only Day 1**.
 
-The purpose of this step was to assess whether unusually short monitoring periods influenced survival estimates. The overall conclusion remained unchanged: 10 °C storage was associated with substantially longer time to the Stage 4 endpoint.
+After temporarily excluding these short-follow-up observations, the median pattern remained:
+
+- T10: **17 days**
+- T20: **7 days**
+- Ambient: **7 days**
+
+Thus, the principal storage-group pattern was not driven by the Day-1-only censored observations.
+
+---
+
+## Extreme Censoring Scenario Sensitivity
+
+Two additional hypothetical censoring scenarios were examined.
+
+| Scenario | T20 vs T10 TR | Ambient vs T10 TR |
+|---|---:|---:|
+| Latest-follow-up scenario | 0.404 | 0.399 |
+| Earliest-event scenario | 0.431 | 0.423 |
+
+The estimated time ratios remained broadly consistent across the scenarios.
+
+These scenarios are sensitivity analyses rather than formal statistical bounds and cannot determine the true censoring mechanism.
 
 ---
 
 ## Stage 5 Endpoint Sensitivity
 
-A secondary survival analysis using **Stage 5** as the endpoint showed the same overall pattern:
+Stage 5 was analysed as a secondary endpoint.
 
-- 10 °C storage maintained longer ripening trajectories
-- 20 °C and ambient storage showed faster progression
-- The relative ordering of storage conditions remained unchanged
+| Storage Condition | KM Median Time to Stage 5 |
+|---|---:|
+| T10 | 22 days |
+| T20 | 10 days |
+| Ambient | 9 days |
 
-This supports the robustness of the primary Stage 4 findings.
+The supporting Weibull AFT time ratios relative to T10 were:
+
+- **T20: TR = 0.431**
+- **Ambient: TR = 0.410**
+
+Unlike the primary Stage-4 endpoint, T20 and ambient storage showed a detectable difference for Stage 5:
+
+**T20 vs Ambient log-rank: χ² = 57.72, p = 3.02 × 10⁻¹⁴.**
+
+Thus, the broad conclusion that T10 had the longest ripening trajectory was robust to endpoint choice.
+
+However, the similarity between T20 and ambient observed for the primary Stage-4 endpoint did **not** persist for Stage 5.
 
 ---
 
 <img width="2539" height="1638" alt="KM_stage5_sensitivity" src="https://github.com/user-attachments/assets/57b42ef6-407f-41fc-b601-6d785f41daea" />
 
-
- 
-**Kaplan-Meier sensitivity analysis using Stage 5 as an alternative shelf-life endpoint. The overall ranking of storage conditions remained consistent with the primary Stage 4 analysis.**
+**Kaplan-Meier sensitivity analysis using Stage 5 as an alternative endpoint. T10 retained the longest ripening trajectory, while T20 and ambient became distinguishable at this later endpoint.**
 
 ---
 
 # Interpretation
 
-Taken together, the Kaplan-Meier, RMST, standard Weibull AFT, and interval-censored survival analyses all support the same practical conclusion:
+Taken together, the Kaplan-Meier, RMST, conventional Weibull AFT, and primary interval-censored Weibull AFT analyses support the following conclusions:
 
-- **10 °C storage was associated with substantially longer shelf-life**
-- **20 °C and ambient storage showed broadly similar ripening trajectories**
-- **The main findings were robust across multiple sensitivity analyses**
+- **T10 storage was associated with substantially longer time to the primary Stage-4 endpoint.**
+- **For Stage 4, T20 and ambient storage showed no detectable difference in the pairwise log-rank comparison (p = 0.314).**
+- **The primary interval-censored AFT estimates were consistent with the supporting conventional Weibull AFT analysis.**
+- **The main T10-versus-warmer-storage pattern remained stable across censoring sensitivity analyses.**
+- **Stage 5 sensitivity analysis preserved the longer T10 trajectory but revealed a detectable difference between T20 and ambient.**
 
-Because this is a secondary analysis of an existing dataset, the results should be interpreted as **associations between storage regime and observed ripening progression**, rather than as definitive causal effects.
+Because this study is a secondary analysis of an existing dataset, storage-group comparisons are interpreted as **associations between storage regime and observed ripening progression**, rather than as definitive causal effects of temperature.
 
 ---
 
@@ -454,15 +503,27 @@ avocado-survival-analysis/
 │   └── avocado_conceptual_DAG.png
 │
 ├── results/
-│   ├── RMST_with_bootstrap_CI.csv
+│   ├── KM_median_survival_with_CI.csv
+│   ├── logrank_results.csv
+│   ├── logrank_T20_vs_Tam.csv
 │   ├── aft_results.csv
+│   ├── AFT_distribution_sensitivity.csv
+│   ├── AFT_standard_vs_interval_comparison.csv
+│   ├── interval_censored_weibull_AFT_results.csv
 │   ├── interval_censored_weibull_AFT_results.txt
-│   ├── KM_median_survival.csv
+│   ├── RMST_results.csv
+│   ├── RMST_with_bootstrap_CI.csv
+│   ├── RMST_pairwise_differences_with_CI.csv
+│   ├── stage5_T20_vs_Tam_logrank.csv
+│   ├── stage5_weibull_AFT_results.csv
 │   └── final_analysis_summary_revised.csv
 │
 ├── requirements.txt
 │
 └── LICENSE
+```
+
+> The repository tree above should reflect files actually committed to the repository. Output files generated by the notebook can be added to the `results/` directory as appropriate.
 
 ---
 
@@ -475,70 +536,122 @@ This repository is designed to provide a transparent and reproducible implementa
 Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/avocado-survival-analysis.git
-
+git clone https://github.com/SumaiyaData/avocado-survival-analysis.git
 cd avocado-survival-analysis
+```
 
-Install the required dependencies:
+Install the required Python dependencies:
+
+```bash
 pip install -r requirements.txt
+```
 
+The primary interval-censored model additionally requires **R** and the R `survival` package. Python communicates with R through `rpy2`.
 
-The notebook contains the complete workflow, including:
-- dataset preparation,
-- fruit-level trajectory reconstruction,
-- survival dataset generation,
-- Kaplan-Meier analysis,
-- Weibull AFT modelling,
-- interval-censored survival analysis,
-- RMST estimation,
-- sensitivity analyses.
-Data Availability
-The original dataset is not redistributed in this repository.
-The Hass Avocado Ripening Photographic Dataset can be downloaded from the official source: https://data.mendeley.com/datasets/3xd9n945v8/1
+The notebook contains the complete analytical workflow, including:
 
-Limitations:
-This repository represents a secondary analysis of an existing public dataset.
-Important limitations include:
-- No new avocado storage experiment was performed.
-- Detailed information regarding chamber-level replication and treatment allocation was unavailable.
-- Storage conditions should therefore be interpreted as associated with observed ripening trajectories rather than definitive causal effects.
-- Biological quality measurements, including firmness, chemical composition, and sensory evaluation, were not available in the dataset.
+- dataset preparation
+- duplicate and fruit-day consistency checks
+- fruit-level trajectory reconstruction
+- Stage-4 survival-dataset generation
+- censoring inspection
+- Kaplan-Meier analysis
+- log-rank testing
+- conventional Weibull AFT modelling
+- AFT distributional sensitivity analysis
+- primary interval-censored Weibull AFT modelling
+- RMST estimation
+- bootstrap confidence intervals
+- censoring sensitivity analyses
+- Stage-5 endpoint sensitivity analysis
+- conceptual DAG generation
 
-Relationship to the Original Dataset Study:
-The original Hass Avocado Ripening Photographic Dataset was developed primarily for image-based ripeness assessment and classification. This repository extends the analytical use of the dataset by treating ripening progression as a time-to-event survival problem. The objective is not to replace image classification approaches, but to provide an additional statistical framework for modelling shelf-life dynamics from longitudinal agricultural imaging data.
+### Software Environment Used for the Final Analysis
 
-# Citation
-
-If you use this workflow, please cite the repository, dataset, and original publication.
-
-## Repository
-
-**Avocado Survival Analysis Framework**
-
-GitHub Repository:
-
-https://github.com/SumaiyaData/avocado-survival-analysis
-
-
-## Dataset
-
-Xavier, Pedro; Rodrigues, Pedro; L. M. Silva, Cristina (2024).
-
-**"Hass Avocado Ripening Photographic Dataset."**
-
-Mendeley Data, V1.
-
-https://doi.org/10.17632/3xd9n945v8.1
-
-
-## Related Publication
-
-Xavier P., Rodrigues P.M., Silva C.L.M. (2024).
-
-**"Shelf-Life Management and Ripening Assessment of Hass Avocado Using Deep Learning Approaches."**
-
-Foods, 13(8), 1150.
-
+- Python: **3.13.16**
+- lifelines: **0.30.3**
+- pandas: **2.2.3**
+- NumPy: **2.1.3**
+- rpy2: **3.5.17**
+- R: **4.6.1**
+- R `survival`: **3.8-12**
 
 ---
 
+# Data Availability
+
+The original Hass avocado image dataset is **not redistributed in this repository**.
+
+It can be downloaded from the official Mendeley Data record:
+
+https://data.mendeley.com/datasets/3xd9n945v8/1
+
+The analysis notebook expects the original dataset files to be obtained from this source.
+
+---
+
+# Limitations
+
+This repository represents a secondary analysis of an existing public dataset.
+
+Important limitations include:
+
+- No new avocado storage experiment was conducted for this analysis.
+- The storage-allocation mechanism was not fully documented in the source materials.
+- The available source information did not clearly establish the number of independent storage chambers used for each condition.
+- Therefore, storage-group comparisons are interpreted as **associations**, rather than definitive causal temperature effects.
+- For 52 fruits, Stage 4 was not observed before the final available record. The reason follow-up ended for these fruits was not documented in the available dataset.
+- Sensitivity analyses were used to evaluate the influence of censoring assumptions, but they cannot establish that censoring was non-informative.
+- Biological quality measurements such as firmness, chemical composition, and sensory quality were not available for inclusion in the survival models.
+- The survival endpoints are based on the ripening-stage classifications supplied in the original dataset.
+- The analysis demonstrates a statistical framework for reusing longitudinal image datasets and is not a newly conducted storage trial.
+
+---
+
+# Relationship to the Original Dataset Study
+
+The original Hass Avocado Ripening Photographic Dataset was developed primarily for image-based ripeness assessment and classification.
+
+This repository extends the analytical use of that dataset by treating longitudinal ripening progression as a time-to-event problem.
+
+The objective is not to replace image-classification approaches, but to demonstrate an additional statistical framework for modelling shelf-life dynamics from repeated agricultural imaging observations.
+
+---
+
+# Citation
+
+If you use this workflow, please cite the repository, the original dataset, and the associated publication.
+
+## Repository
+
+**Beyond Ripeness Classification: A Survival Analysis Framework for Hass Avocado Shelf-Life Modelling**
+
+GitHub repository:
+
+https://github.com/SumaiyaData/avocado-survival-analysis
+
+## Dataset
+
+Xavier, Pedro; Rodrigues, Pedro; Silva, Cristina L. M. (2024).
+
+**Hass Avocado Ripening Photographic Dataset.**
+
+Mendeley Data, Version 1.
+
+https://doi.org/10.17632/3xd9n945v8.1
+
+## Related Publication
+
+Xavier, P., Rodrigues, P. M., & Silva, C. L. M. (2024).
+
+**Shelf-Life Management and Ripening Assessment of Hass Avocado Using Deep Learning Approaches.**
+
+*Foods, 13*(8), 1150.
+
+---
+
+## License
+
+See the `LICENSE` file in this repository for the terms governing reuse of the repository code.
+
+The original dataset remains subject to the terms specified by the original data provider.
