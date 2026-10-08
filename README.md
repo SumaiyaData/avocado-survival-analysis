@@ -264,7 +264,7 @@ The workflow includes the following robustness checks.
 ### Fruit-Side Agreement Check
 
 - The two photographed sides had identical ripening-stage classifications for all **7,361 fruit-days**.
-- Therefore, side aggregation did not influence the derived survival outcome.
+- Because the two ratings agreed for every fruit-day, the choice of maximum, minimum, or mean side aggregation would not change the derived survival outcome.
 
 ### Censoring Inspection
 
@@ -459,7 +459,7 @@ Unlike the primary Stage-4 endpoint, T20 and ambient storage showed a detectable
 
 **T20 vs Ambient log-rank: χ² = 57.72, p = 3.02 × 10⁻¹⁴.**
 
-Thus, the broad conclusion that T10 had the longest ripening trajectory was robust to endpoint choice.
+Thus, the finding that T10 had the longest ripening trajectory was consistent across the Stage-4 and Stage-5 endpoints. However, the relationship between T20 and ambient storage differed by endpoint.
 
 However, the similarity between T20 and ambient observed for the primary Stage-4 endpoint did **not** persist for Stage 5.
 
@@ -493,7 +493,7 @@ avocado-survival-analysis/
 ├── README.md
 │
 ├── notebooks/
-│   └── 01_Avocado_Survival_Analysis.ipynb
+│   └── Avocado_Survival_Analysis.ipynb
 │
 ├── figures/
 │   ├── workflow_diagram.png
